@@ -1,3 +1,4 @@
+// Mqtt connection to broker
 function MQTTconnect(){
     console.log('connecting to broker.emqx.io'+" "+8084);
     mqtt=new Paho.MQTT.Client('broker.emqx.io',8084,'atheletejs');
@@ -9,9 +10,12 @@ function MQTTconnect(){
 }
 MQTTconnect();
 document.getElementById('formelement').style.display='none';
+
 var coachlandmarks=null;
+// Radius of ball appearing on screen
 var hitradius=0.05*canvasWidth;
 
+// Hitmarkers for balls appearing on screen
 var lefthit=0;
 var righthit=0;
 
@@ -21,6 +25,7 @@ function Exercise(results) {
     ctx2.font = Math.floor((canvasWidth*20)/720) + "px Arial 900";
     ctx2.fillText('Athelete 2', 0, canvasHeight);
 
+    // Send body position data to coach via mqtt
     msgdata=[[results.poseLandmarks[19].x,results.poseLandmarks[19].y],[results.poseLandmarks[20].x,results.poseLandmarks[20].y],[(results.poseLandmarks[23].x+results.poseLandmarks[24].x)/2,(results.poseLandmarks[23].y+results.poseLandmarks[24].y)/2],[(results.poseLandmarks[11].x+results.poseLandmarks[12].x)/2,(results.poseLandmarks[11].y+results.poseLandmarks[12].y)/2]];
     msgtosend=new Paho.MQTT.Message(JSON.stringify(msgdata));
     msgtosend.destinationName='athelete';
@@ -37,9 +42,11 @@ function Exercise(results) {
 
         lefthit=0;
         righthit=0;
+        // Set lefthit=1 if lefthand is inside ball
         if(Math.pow(Math.abs((results.poseLandmarks[20].x-coachlandmarks[1][0])*canvasWidth),2)+Math.pow(Math.abs((results.poseLandmarks[20].y-coachlandmarks[1][1])*canvasHeight),2)<=hitradius*hitradius){
             lefthit=1;
         }
+        // Set right=1 if righthand is inside ball
         if(Math.pow(Math.abs((results.poseLandmarks[19].x-coachlandmarks[0][0])*canvasWidth),2)+Math.pow(Math.abs((results.poseLandmarks[19].y-coachlandmarks[0][1])*canvasHeight),2)<=hitradius*hitradius){
             righthit=1;
         }
@@ -47,6 +54,8 @@ function Exercise(results) {
 
 
         var gradient3=null;
+        
+        // Set right ballcolour to green if righthand is inside ball
         ctx2.beginPath();
         if(righthit==0){
             gradient3 = ctx2.createLinearGradient(coachlandmarks[0][0]*canvasWidth-hitradius, coachlandmarks[0][1]*canvasHeight-hitradius, coachlandmarks[0][0]*canvasWidth+hitradius,  coachlandmarks[0][1]*canvasHeight+hitradius);
@@ -73,6 +82,7 @@ function Exercise(results) {
         ctx2.closePath();
  
 
+        // Set left ballcolour to green if lefthand is inside ball
         ctx2.beginPath();
         if(lefthit==0){
             gradient3 = ctx2.createLinearGradient(coachlandmarks[1][0]*canvasWidth-hitradius, coachlandmarks[1][1]*canvasHeight-hitradius, coachlandmarks[1][0]*canvasWidth+hitradius,  coachlandmarks[1][1]*canvasHeight+hitradius);

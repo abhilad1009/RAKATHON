@@ -1,3 +1,4 @@
+// Mqtt connection to broker
 function MQTTconnect(){
     console.log('connecting to broker.emqx.io'+" "+8084);
     mqtt=new Paho.MQTT.Client('broker.emqx.io',8084,'coachjs');
@@ -13,9 +14,12 @@ document.getElementById('formelement').style.display='none';
 
 
 var athletelandmarks=null;
+// Radius of ball appearing on screen
 var hitradius=0.05*canvasWidth;
+
 var leftcolor='#00d2ff';
 var rightcolor='#00d2ff';
+
 function Exercise(results) {
     ctx2.globalAlpha=1;
     ctx2.globalAlpha=1;
@@ -23,6 +27,8 @@ function Exercise(results) {
     ctx2.fillText('Coach 2', 0, canvasHeight);
 
     ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+
+    // Send hand position data to coach via mqtt
     msgdata=[[results.poseLandmarks[19].x,results.poseLandmarks[19].y],[results.poseLandmarks[20].x,results.poseLandmarks[20].y]];
     msgtosend=new Paho.MQTT.Message(JSON.stringify(msgdata));
     msgtosend.destinationName='coach';
@@ -35,6 +41,7 @@ function Exercise(results) {
         // console.log(msg[0]);
     }
 
+    // Draw skeleton of athelete
     if(athletelandmarks!=null){
         ctx2.beginPath();
         ctx2.strokeStyle='red';
@@ -60,9 +67,11 @@ function Exercise(results) {
 
     leftcolor='#00d2ff';
     rightcolor='#00d2ff';
+    // Set left ballcolour to green if lefthand is inside ball
     if(Math.pow(Math.abs((results.poseLandmarks[20].x-athletelandmarks[1][0])*canvasWidth),2)+Math.pow(Math.abs((results.poseLandmarks[20].y-athletelandmarks[1][1])*canvasHeight),2)<=hitradius*hitradius){
         leftcolor='#00FF00';
     }
+    // Set right ballcolour to green if righthand is inside ball
     if(Math.pow(Math.abs((results.poseLandmarks[19].x-athletelandmarks[0][0])*canvasWidth),2)+Math.pow(Math.abs((results.poseLandmarks[19].y-athletelandmarks[0][1])*canvasHeight),2)<=hitradius*hitradius){
         rightcolor='#00FF00';
     }

@@ -1,3 +1,4 @@
+// Mqtt connection to broker
 function MQTTconnect(){
     console.log('connecting to broker.emqx.io'+" "+8084);
     mqtt=new Paho.MQTT.Client('broker.emqx.io',8084,'atheletejs');
@@ -9,9 +10,14 @@ function MQTTconnect(){
 }
 MQTTconnect();
 document.getElementById('formelement').style.display='none';
+
+
 var coachlandmarks=null;
+
+// Radius of ball appearing on screen
 var hitradius=0.05*canvasWidth;
 
+// Hitmarkers for balls appearing on screen
 var lefthit=0;
 var righthit=0;
 
@@ -21,11 +27,16 @@ function Exercise(results) {
     ctx2.font = Math.floor((canvasWidth*20)/720) + "px Arial";
     ctx2.fillText('Athelete 1', 0, canvasHeight);
 
+    // Calulating angles for exercise
+    // angle a: internal left shoulder angle
+    // angle b: internal right shoulder angle
+    // angle c: angle between your legs
     a=find_angle(results.poseLandmarks[16],results.poseLandmarks[12],results.poseLandmarks[24]);
     b=find_angle(results.poseLandmarks[15],results.poseLandmarks[11],results.poseLandmarks[23]);
     c=find_angle(results.poseLandmarks[25],results.poseLandmarks[23],results.poseLandmarks[26]);
 
 
+    // Send angle data to coach via mqtt
     msgtosend=new Paho.MQTT.Message(JSON.stringify([a,b,c]));
     msgtosend.destinationName='athelete';
     mqtt.send(msgtosend);
@@ -36,8 +47,10 @@ function Exercise(results) {
         // console.log(typeof msg);
         
     }
+
     if(coachlandmarks!=null){
 
+        // Draw green skeleton if all angles are satisfied
        if(c>coachlandmarks[0] && a>coachlandmarks[1] && b>coachlandmarks[2]){
         drawConnectors(ctx2, results.poseLandmarks, POSE_CONNECTIONS,
             {color: '#00ff00'});
@@ -47,6 +60,7 @@ function Exercise(results) {
             {color: 'white'}); 
         }
 
+        // Display target angle set by coach
         ctx2.font = Math.floor((canvasWidth*20)/720) + "px Arial";
         ctx2.textAlign = "left";
         ctx2.globalAlpha=0.6;

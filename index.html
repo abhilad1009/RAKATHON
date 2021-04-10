@@ -12,15 +12,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <style>
-    @font-face {
-        font-family: "Algerian";
-        src: url("fonts/Algerian.ttf");
-    }
+
     </style>
 </head>
 
 <body>
     <!-- <div id="console"></div> -->
+    <!-- Main screen button elements -->
     <button id='fsbutton' type="button" class="btn btn-primary btn-lg" onclick="fullscreentoggle()">
         Fullscreen
     </button>
@@ -30,11 +28,14 @@
     <button id='helpbutton' class="btn btn-primary btn-lg" onclick="openhelp()">
         Help
     </button>
+    <!-- Video and Canvas elements -->
     <div class='media' style="height: 720;">
         <video hidden  muted width="1280" height="720" id="webcam" ></video>
         <canvas id="output1" width="1280" height="720"></canvas>
         <canvas id="output2" width="1280" height="720"></canvas>
     </div>
+
+    <!-- Form element for coach -->
         <form id="formelement">
             <div class="slidecontainer">
                 <label for="lhl">Leg-Hip-Leg Angle</label><br>
@@ -50,6 +51,7 @@
               
         </form>
 
+    <!-- Example selection buttons -->
     <div id="myNav" class="overlay">
         <div class="overlay-content">
             <button id='ballhoop' class="btn btn-danger btn-lg" onclick="game(1)">
@@ -70,6 +72,8 @@
         </div>
 
     </div>
+
+    <!-- Instructions page -->
     <div id="helpinfo" class="overlay">
         <div class="overlay-content">
             <h2>General Instructions</h2>

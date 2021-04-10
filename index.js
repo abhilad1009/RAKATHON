@@ -15,10 +15,7 @@ const defaultheight=Math.min(window.innerHeight,720);
 
 // Display Variables and Elements
 // ==========================================================================================================
-// var countElement = document.getElementById('count');
 var count = 0;
-// var inframe = document.getElementById('inframe');
-// var gamename=document.getElementById('game');
 // ==========================================================================================================
 
 
@@ -30,8 +27,6 @@ var fnstate = 0;
 
 // Button Elements
 // ==========================================================================================================
-// const ctbutton=document.getElementById('ctbutton');
-// const rstbutton=document.getElementById('rstbutton');
 const fsbutton=document.getElementById('fsbutton');
 const helpbutton=document.getElementById('helpbutton');
 // ==========================================================================================================
@@ -74,19 +69,11 @@ canvas1.width = canvasWidth;
 canvas1.height = canvasHeight;
 POSE_CONNECTIONS=[[24,26],[26,28],[23,25],[25,27],[12,24],[11,23],[24,23],[11,12],[11,13],[13,15],[12,14],[14,16]];
 
+
+
+
+// Function to toggle fullscreen mode
 var fullscreen=0;
-
-const sampling_rate=3;
-var sampling_count=0;
-const activityLandmark=[11,12,13,14,15,16,23,24,25,26,27,28];
-var saved_activity=Array(50).fill(0);
-var saved_activity_iterator=0;
-var sampled_pose=null;
-var total_activity=0;
-// var fr=10;
-var act_sum=0;
-
-
 function fullscreentoggle(){
     var elem = document.documentElement;
     if(!fullscreen){
@@ -113,6 +100,8 @@ function fullscreentoggle(){
         fullscreen=0;
     }
 }
+
+// Function to open help page
 var helpdisp=0;
 function openhelp(){
     if(helpdisp){
@@ -124,8 +113,9 @@ function openhelp(){
         helpdisp=1;
     }
 }
-var menu=1;
 
+// Function to open menu
+var menu=1;
 function openNav() {
     if(menu){
         document.getElementById("myNav").style.width = "0%";
@@ -138,14 +128,14 @@ function openNav() {
   }
 var functionVar=null;
 
-
+// Function to load appropriate js file for different examples
 function game(x){
     switch (x) {
         case 1:
             // gamename.innerHTML='Burpees';
 
             $.getScript("Abhi/athelete1.js");
-            exerciseName='High Knees';
+            exerciseName='athelete1';
             functionVar=1;
             initialized=1;
             openNav();
@@ -157,7 +147,7 @@ function game(x){
         case 2:
 
             $.getScript("Abhi/coach1.js");
-            exerciseName='Hand Punches';
+            exerciseName='coach1';
             functionVar=1;
             initialized=1;
             openNav();
@@ -169,7 +159,7 @@ function game(x){
         case 3:
 
             $.getScript("Abhi/athelete2.js");
-            exerciseName='Leg Raises';
+            exerciseName='athelete2';
             functionVar=1;
             initialized=1;
             openNav();
@@ -180,7 +170,7 @@ function game(x){
         case 4:
 
             $.getScript("Abhi/coach2.js");
-            exerciseName='Leg Raises';
+            exerciseName='coach2';
             functionVar=1;
             initialized=1;
             openNav();
@@ -196,6 +186,7 @@ function game(x){
 
 // ==========================================================================================================
 
+// Function to calculate angle between body parts
 function find_angle(A,B,C) {
     var AB = Math.sqrt(Math.pow(B.x-A.x,2)+ Math.pow(B.y-A.y,2));    
     var BC = Math.sqrt(Math.pow(B.x-C.x,2)+ Math.pow(B.y-C.y,2)); 
@@ -205,62 +196,9 @@ function find_angle(A,B,C) {
 
 // ==========================================================================================================
 
-function checkSquat(poses) {
-    let up, down, progress, a,b;  
-    if(poses[27].visibility > 0.2 && poses[28].visibility > 0.2)
-          {   
-              // find squat angle
-              a = find_angle(poses[24],poses[26],poses[28]);
-              b = find_angle(poses[23],poses[25],poses[27]);
-              
-              // standing, if angle is >= 150
-              if(a>=150 && b>=150) {
-                  up = true;
-                  progress = false;
-                  console.log("up");
-              }
-              
-              // squat angle is <=100
-              else if(a<=100 && b<=100) {
-                  down = true;
-                  up = false;
-                  progress = false;
-                  console.log("squat");
-              }
-  
-              else {
-                progress = true;
-              }
-          }
-        return [up, down, progress, a,b]
-  }
 
-// ==========================================================================================================
 
-// draw keypoints - shoulders, hips, knees, ankles
-function draw(color, ctx, poses) {
-    // overriding POSE_CONNECTIONS
-    let connections = [[0,1], [1,3], [2,3], [3,5], [5,7], [0,2], [2,4], [4,6]]
-  
-    drawConnectors(
-        ctx, [
-            poses[11], poses[12],
-            poses[23], poses[24],
-            poses[25], poses[26],
-            poses[27], poses[28],  
-        ], connections,
-        {color: color});
-    
-    drawLandmarks(
-        ctx, [
-            poses[11], poses[12],
-            poses[23], poses[24],
-            poses[25], poses[26],
-            poses[27], poses[28],  
-        ],
-        {color: color, fillColor: color, lineWidth: 4, radius: 6});
-    
-  }
+
   
 
 // Run main function
@@ -270,6 +208,7 @@ const minConfidence=0.5;
 var initialized=1;
 
 function onResults(results) {
+    // Dynamic scaling of video and canvas
     if((window.innerWidth/window.innerHeight>=aspectratio && window.innerHeight!=canvasHeight) || (window.innerWidth/window.innerHeight<aspectratio && window.innerWidth!=canvasWidth)){
         if(window.innerWidth/window.innerHeight>=aspectratio){
             canvasHeight=window.innerHeight;
@@ -286,19 +225,8 @@ function onResults(results) {
         canvas2.height=canvasHeight;
         canvas2.width=canvasWidth;
     }
-    // set FPS
-    fr+=1;
-
-    if(lim < 10) {
-        var thisLoop = new Date();
-        fps = 1000 / (thisLoop - lastLoop); // finds average FPS for the first 10 frames
-        lastLoop = thisLoop;
-        lim++;
-    }
 
 
-    // 
-    //
     ctx1.save();
     ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
     ctx1.drawImage(
@@ -307,6 +235,7 @@ function onResults(results) {
     ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
     
     var clr='blue';
+
     if (functionVar!=null){
         if (!initialized){
             if(!played){
@@ -383,13 +312,13 @@ function onResults(results) {
     
     
 
-
-    // console.log(intensity);
     ctx1.restore();
     ctx2.restore();
     
   }
   
+
+//   Loading Pose Estimation Model with default parameters
   const pose = new Pose({locateFile: (file) => {
     return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
   }});
@@ -405,6 +334,7 @@ function onResults(results) {
                 
 pose.onResults(onResults);
 
+// Webcam controller
   const camera = new Camera(webcamElement, {
     onFrame: async () => {
       await pose.send({image: webcamElement});
@@ -414,4 +344,6 @@ pose.onResults(onResults);
   });
 
   camera.start();
+
+//   Timing Function
   setInterval(function(){timecounter+=1;frames=fr;fr=0;},1000);

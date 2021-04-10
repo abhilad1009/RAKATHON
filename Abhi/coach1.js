@@ -1,3 +1,4 @@
+// Mqtt connection to broker
 function MQTTconnect(){
     console.log('connecting to broker.emqx.io'+" "+8084);
     mqtt=new Paho.MQTT.Client('broker.emqx.io',8084,'coachjs');
@@ -9,6 +10,7 @@ function MQTTconnect(){
 }
 MQTTconnect();
 
+// Get data from form element
 document.getElementById('formelement').style.display='block';
 var slider1 = document.getElementById("lhl");
 var output1 = document.getElementById("lhldemo");
@@ -33,7 +35,9 @@ slider3.oninput = function() {
 }
 
 var athletelandmarks=null;
+// Radius of ball appearing on screen
 var hitradius=0.05*canvasWidth;
+
 var leftcolor='#00d2ff';
 var rightcolor='#00d2ff';
 
@@ -46,7 +50,7 @@ function Exercise(results) {
 
     ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
 
-        // results.poseLandmarks.push(slider.value);
+    // Send target angles to athelete
     msgtosend=new Paho.MQTT.Message(JSON.stringify([slider1.value,slider2.value,slider3.value]));
     msgtosend.destinationName='coach';
     mqtt.send(msgtosend);
@@ -58,6 +62,7 @@ function Exercise(results) {
         // console.log(msg[0]);
     }
 
+    // Display body angles achieved by athelete
     if(athletelandmarks!=null){
         // drawConnectors(ctx2, athletelandmarks, [[0,1],[0,2],[2,4],[1,3],[3,5],[5,7],[7,9],[9,11],[4,6],[6,8],],
         //     {color: 'blue'});
@@ -86,17 +91,5 @@ function Exercise(results) {
     }
     
 
-    leftcolor='#00d2ff';
-    rightcolor='#00d2ff';
-    if(Math.pow(Math.abs((results.poseLandmarks[20].x-athletelandmarks[28].x)*canvasWidth),2)+Math.pow(Math.abs((results.poseLandmarks[20].y-athletelandmarks[28].y)*canvasHeight),2)<=hitradius*hitradius){
-        leftcolor='#00FF00';
-    }
-    if(Math.pow(Math.abs((results.poseLandmarks[19].x-athletelandmarks[27].x)*canvasWidth),2)+Math.pow(Math.abs((results.poseLandmarks[19].y-athletelandmarks[27].y)*canvasHeight),2)<=hitradius*hitradius){
-        rightcolor='#00FF00';
-    }
-    drawLandmarks(ctx2, [results.poseLandmarks[19]],
-                {color: 'white', fillColor:rightcolor,lineWidth: 5, radius: hitradius});
-    drawLandmarks(ctx2, [results.poseLandmarks[20]],
-                    {color: 'white', fillColor:leftcolor,lineWidth: 5, radius: hitradius});
 
 }
